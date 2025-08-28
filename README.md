@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Polly — Minimal Polling App (Scaffold)
 
-## Getting Started
+Polly is a lightweight Next.js polling app scaffold with Tailwind-style UI and shadcn-inspired components. It is client-first and intentionally backend-free for now — registration, login, voting, and poll creation are simulated on the client.
 
-First, run the development server:
+## Key routes
+- GET /                      → Home (app/page.tsx)  
+- GET /polls                 → All polls (app/polls/page.tsx)  
+- GET /polls/[id]            → Poll details (app/polls/[id]/page.tsx)  
+- GET /create-poll           → Create poll (app/create-poll/page.tsx)  
+- GET /(auth)/login          → Sign in (app/(auth)/login/page.tsx)  
+- GET /(auth)/register       → Register (app/(auth)/register/page.tsx)  
+- GET /dashboard             → Dashboard (app/dashboard/page.tsx)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features (current)
+- Client-side registration → redirects to login (no backend)
+- Client-side login → redirects to /dashboard (simulated)
+- Create poll form with option management (add/remove) and client-only submit
+- Polls list with search, sort, and pagination (client)
+- Poll details page with local voting UI (votes are local-only)
+- Shared UI components: Button, Input, PollCard, PollList, PollVote, AuthForm, NavBar
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project layout (high-level)
+- app/ — Next.js app routes and pages
+- components/ — UI and feature components (poll/, auth/, nav/, ui/)
+- hooks/ — simple client/server placeholder hooks
+- styles/globals.css — global Tailwind (if configured)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Installation (Windows)
+1. Install dependencies:
+   - npm install
+   - or: pnpm install / yarn
+2. Run dev server:
+   - npm run dev
+   - or: pnpm dev / yarn dev
+3. Open http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Notes & next steps
+- No backend is wired. Replace placeholder hooks / simulated timeouts with real API calls when ready.
+- The project uses path alias "@/..." — ensure tsconfig.json and Next config support it or change imports to relative paths.
+- UI uses Tailwind utility classes. If shadcn components are desired, install and wire them in (I used minimal shadcn-like patterns).
+- To persist polls/votes/auth: add API routes (app/api or /pages/api) and connect a database (Prisma suggested).
 
-## Learn More
+## Quick dev tips
+- Restart dev server after adding new route files.
+- Check console for Next.js messages about async dynamic params (await params in dynamic route handlers).
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+License: MIT
