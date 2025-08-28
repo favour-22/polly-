@@ -1,5 +1,9 @@
 "use client";
 
+// The following context/provider code should NOT be in this file.
+// It is commented out to prevent build errors.
+// Move this to context/AuthContext.tsx if you need a provider
+/*
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
@@ -53,7 +57,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
+*/
 
+// Only the hook should be in this file:
 import { useContext } from "react";
 import { AuthContext } from "@/context/AuthContext";
 
