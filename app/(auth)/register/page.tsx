@@ -1,4 +1,5 @@
 import AuthForm from "@/components/auth/AuthForm";
+import Link from "next/link";
 
 export default function RegisterPage() {
   return (
@@ -13,6 +14,16 @@ export default function RegisterPage() {
 
         <div className="w-full md:w-1/2">
           <AuthForm mode="register" />
+          {/* optional explicit link as a fallback */}
+          <div className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
+            Already a user?{" "}
+            <Link
+              href="/login"
+              className="underline text-indigo-600 dark:text-indigo-400"
+            >
+              Sign in
+            </Link>
+          </div>
         </div>
       </div>
     </div>

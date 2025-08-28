@@ -1,7 +1,29 @@
+"use client";
+
 import NavBar from "@/components/nav/NavBar";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function DashboardPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  if (!user) {
+    return null; // Or a redirecting message
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-100">
       <NavBar />
@@ -27,7 +49,7 @@ export default function DashboardPage() {
 
           <div className="mt-6">
             <div className="text-sm text-slate-600 dark:text-slate-400">
-              You are signed in (simulated). Polls you create will be shown here once backend integration is added.
+              You are signed in as {user.email}. Polls you create will be shown here once backend integration is added.
             </div>
 
             <div className="mt-6 grid sm:grid-cols-2 gap-4">

@@ -29,8 +29,7 @@ export default function Home() {
                 <Link href="/polls" className="inline-flex items-center px-4 py-2 rounded-md border border-slate-200 dark:border-slate-700 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
                   View polls
                 </Link>
-                {/* updated: point sign-in from home to grouped auth login route */}
-                <Link href="/auth/login" className="inline-flex items-center px-3 py-2 rounded-md text-sm underline">
+                <Link href="/login" className="inline-flex items-center px-3 py-2 rounded-md text-sm underline">
                   Sign in
                 </Link>
               </div>
@@ -39,11 +38,6 @@ export default function Home() {
             <div className="hidden md:block w-64">
               <div className="p-4 rounded-lg bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-900/40 dark:to-slate-950 shadow-inner">
                 <p className="text-sm text-slate-600 dark:text-slate-300">Active polls</p>
-                <div className="mt-3 space-y-3">
-                  {polls.map((p) => (
-                    <PollCard key={p.id} id={p.id} title={p.title} description={p.description} />
-                  ))}
-                </div>
               </div>
             </div>
           </div>

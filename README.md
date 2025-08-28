@@ -9,6 +9,7 @@ Polly is a lightweight Next.js polling app scaffold with Tailwind-style UI and s
 - GET /create-poll           → Create poll (app/create-poll/page.tsx)  
 - GET /(auth)/login          → Sign in (app/(auth)/login/page.tsx)  
 - GET /(auth)/register       → Register (app/(auth)/register/page.tsx)  
+- GET /forgot-password       → Forgot password (app/forgot-password/page.tsx)  
 - GET /dashboard             → Dashboard (app/dashboard/page.tsx)
 
 ## Features (current)

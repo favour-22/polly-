@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Input from "@/components/ui/input";
 import Button from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
 
 export default function AuthForm({ mode = "login" }: { mode?: "login" | "register" }) {
   const router = useRouter();
@@ -14,24 +15,43 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const submittingText = mode === "login" ? "Sign in" : "Create account";
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setError(null);
     setSubmitting(true);
-    try {
-      // simulate network latency (no backend)
-      await new Promise((res) => setTimeout(res, 700));
 
+    try {
       if (mode === "register") {
-        // redirect to login with a flag so the login form can show a success message
-        router.push("/(auth)/login?registered=1");
+        if (password !== confirm) {
+          setError("Passwords do not match.");
+          return;
+        }
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) {
+          setError(error.message);
+        } else {
+          router.push("/login?registered=1");
+        }
       } else {
-        // simulate successful login -> go to dashboard
-        router.push("/dashboard");
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) {
+          setError(error.message);
+        } else {
+          router.push("/dashboard");
+        }
       }
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setSubmitting(false);
     }
@@ -49,6 +69,12 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
       {registered && mode === "login" && (
         <div className="mb-3 text-sm text-green-700 bg-green-50 dark:bg-green-900/20 rounded px-3 py-2">
           Account created — please sign in.
+        </div>
+      )}
+
+      {error && (
+        <div className="mb-3 text-sm text-red-700 bg-red-50 dark:bg-red-900/20 rounded px-3 py-2">
+          {error}
         </div>
       )}
 
@@ -72,11 +98,11 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
 
         <div className="flex items-center justify-between mt-2">
           {mode === "login" ? (
-            <Link href="/(auth)/register" className="text-sm text-indigo-600 dark:text-indigo-400 underline">
+            <Link href="/register" className="text-sm text-indigo-600 dark:text-indigo-400 underline">
               Create account
             </Link>
           ) : (
-            <Link href="/(auth)/login" className="text-sm text-slate-600 dark:text-slate-300 underline">
+            <Link href="/login" className="text-sm text-slate-600 dark:text-slate-300 underline">
               Already have an account?
             </Link>
           )}
