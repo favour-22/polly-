@@ -3,10 +3,12 @@ import { useMemo, useState } from "react";
 import PollCard from "./PollCard";
 import Input from "@/components/ui/input";
 import Button from "@/components/ui/button";
+import useAuth from "@/hooks/useAuth";
 
-type Poll = { id: string; title: string; description?: string };
+import type { Poll } from '@/lib/types';
 
 export default function PollList({ initialPolls }: { initialPolls: Poll[] }) {
+  const { user } = useAuth();
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<"newest" | "title">("newest");
   const [page, setPage] = useState(1);
@@ -56,7 +58,18 @@ export default function PollList({ initialPolls }: { initialPolls: Poll[] }) {
             No polls found. Try a different search or create a new poll.
           </div>
         ) : (
-          pageItems.map((p) => <PollCard key={p.id} id={p.id} title={p.title} description={p.description} />)
+          pageItems.map((p) => (
+            <PollCard 
+              key={p.id} 
+              id={p.id} 
+              title={p.title} 
+              description={p.description}
+              creatorId={p.creator_id}
+              currentUserId={user?.id}
+              totalVotes={p.total_votes || 0}
+              optionsCount={p.options_count || 0}
+            />
+          ))
         )}
       </div>
 

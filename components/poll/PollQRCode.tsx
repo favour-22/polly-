@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
+import { recordPollShare } from '@/lib/database';
+import useAuth from '@/hooks/useAuth';
 
 interface PollQRCodeProps {
   pollId: string;
@@ -15,20 +17,26 @@ export default function PollQRCode({
   pollTitle = 'Poll', 
   baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000' 
 }: PollQRCodeProps) {
-  const [pollUrl, setPollUrl] = useState(`${baseUrl}/poll/${pollId}`);
+  const { user } = useAuth();
+  const [pollUrl, setPollUrl] = useState(`${baseUrl}/polls/${pollId}`);
   const [qrSize, setQrSize] = useState(256);
 
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(pollUrl);
+      // Record the share
+      await recordPollShare(pollId, 'copy_url', user?.id);
       alert('Poll URL copied to clipboard!');
     } catch (error) {
       alert('Failed to copy URL');
     }
   };
 
-  const handleDownloadQR = () => {
+  const handleDownloadQR = async () => {
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(pollUrl)}`;
+    
+    // Record the share
+    await recordPollShare(pollId, 'download_qr', user?.id);
     
     const link = document.createElement('a');
     link.href = qrUrl;
@@ -39,6 +47,9 @@ export default function PollQRCode({
   };
 
   const handleShare = async () => {
+    // Record the share
+    await recordPollShare(pollId, 'native_share', user?.id);
+
     if (navigator.share) {
       try {
         await navigator.share({

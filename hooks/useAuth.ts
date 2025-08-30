@@ -59,12 +59,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 */
 
-// Only the hook should be in this file:
-import { useContext } from "react";
-import { AuthContext } from "@/context/AuthContext";
-
+// Mock auth hook for now - replace with real Supabase auth later
 export default function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
-  return ctx;
+  // Return a mock user for development
+  return {
+    user: {
+      id: '00000000-0000-0000-0000-000000000001',
+      email: 'demo@example.com',
+      full_name: 'Demo User'
+    },
+    loading: false,
+    signOut: async () => {
+      console.log('Sign out called');
+    }
+  };
 }

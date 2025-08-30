@@ -4,9 +4,12 @@ import { useRouter } from "next/navigation";
 import Input from "@/components/ui/input";
 import Button from "@/components/ui/button";
 import PollQRCode from "./PollQRCode";
+import { createPoll } from "@/lib/database";
+import useAuth from "@/hooks/useAuth";
 
 export default function PollForm() {
   const router = useRouter();
+  const { user } = useAuth();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -28,6 +31,11 @@ export default function PollForm() {
     e.preventDefault();
     setError(null);
 
+    if (!user) {
+      setError("You must be logged in to create a poll.");
+      return;
+    }
+
     if (!validForm()) {
       setError("Please provide a title and at least two non-empty options.");
       return;
@@ -36,15 +44,24 @@ export default function PollForm() {
     setSubmitting(true);
 
     try {
-      // simulated API request
-      await new Promise((res) => setTimeout(res, 800));
-      const newId = String(Date.now());
-      setSuccessId(newId);
+      const pollData = {
+        title: title.trim(),
+        description: description.trim() || undefined,
+        options: options.filter(Boolean)
+      };
 
-      // longer pause so user can see and use the QR code, then navigate to the poll page
-      setTimeout(() => {
-        router.push(`/polls/${newId}`);
-      }, 5000);
+      const newPollId = await createPoll(pollData, user.id);
+
+      if (newPollId) {
+        setSuccessId(newPollId);
+
+        // longer pause so user can see and use the QR code, then navigate to the poll page
+        setTimeout(() => {
+          router.push(`/polls/${newPollId}`);
+        }, 5000);
+      } else {
+        setError("Failed to create poll. Try again.");
+      }
     } catch (err) {
       setError("Failed to create poll. Try again.");
     } finally {

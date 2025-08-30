@@ -1,7 +1,11 @@
-export async function fetchPolls() {
-  // placeholder: replace with API call
-  return [
-    { id: "1", title: "Example poll 1", description: "Description" },
-    { id: "2", title: "Example poll 2", description: "Description" },
-  ];
+import { getPolls } from '@/lib/database';
+import type { Poll } from '@/lib/types';
+
+export async function fetchPolls(): Promise<Poll[]> {
+  try {
+    return await getPolls();
+  } catch (error) {
+    console.error('Error fetching polls:', error);
+    return [];
+  }
 }

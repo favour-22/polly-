@@ -7,12 +7,23 @@ export default function PollCard({
   id,
   title,
   description,
+  creatorId,
+  currentUserId,
+  totalVotes = 0,
+  optionsCount = 0,
 }: {
   id: string;
   title: string;
   description?: string;
+  creatorId?: string;
+  currentUserId?: string;
+  totalVotes?: number;
+  optionsCount?: number;
 }) {
   const [showQR, setShowQR] = useState(false);
+  
+  // Only show QR code if the current user created this poll
+  const isCreator = creatorId && currentUserId && creatorId === currentUserId;
 
   return (
     <>
@@ -29,25 +40,27 @@ export default function PollCard({
       )}
 
       <div className="mt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-        <div>
+                <div>
           Options:{" "}
-          <span className="font-medium text-slate-700 dark:text-slate-100">4</span>
+          <span className="font-medium text-slate-700 dark:text-slate-100">{optionsCount}</span>
         </div>
         <div className="flex items-center gap-3">
           <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">
-            12 votes
+            {totalVotes} votes
           </span>
-          <button
-            onClick={() => setShowQR(!showQR)}
-            className="text-xs px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded hover:bg-indigo-200 dark:hover:bg-indigo-800 transition"
-            title="Show QR Code"
-          >
-            📱 QR
-          </button>
-          <Link href={`/polls/${id}`} className="underline">
-            View
-          </Link>
-        </div>
+           {isCreator && (
+             <button
+               onClick={() => setShowQR(!showQR)}
+               className="text-xs px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded hover:bg-indigo-200 dark:hover:bg-indigo-800 transition"
+               title="Show QR Code"
+             >
+               📱 QR
+             </button>
+           )}
+           <Link href={`/polls/${id}`} className="underline">
+             View
+           </Link>
+         </div>
               </div>
       </article>
 

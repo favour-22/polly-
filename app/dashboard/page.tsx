@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
-import PollQRCode from "@/components/poll/PollQRCode";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
@@ -50,39 +49,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* QR Code Quick Access */}
-          <div className="mt-8 border-t pt-6">
-            <h2 className="text-lg font-semibold mb-4">Quick Share</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-sm font-medium mb-3">Recent Polls</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                    <span className="text-sm">Team Lunch Preferences</span>
-                    <button className="text-xs px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded hover:bg-indigo-200 dark:hover:bg-indigo-800">
-                      📱 QR
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                    <span className="text-sm">Project Priority Vote</span>
-                    <button className="text-xs px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded hover:bg-indigo-200 dark:hover:bg-indigo-800">
-                      📱 QR
-                    </button>
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium mb-3">Sample QR Code</h3>
-                <div className="flex justify-center">
-                  <PollQRCode 
-                    pollId="dashboard-demo"
-                    pollTitle="Dashboard Demo Poll"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+
         </div>
       </main>
     </div>
