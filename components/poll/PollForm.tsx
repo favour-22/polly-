@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Input from "@/components/ui/input";
 import Button from "@/components/ui/button";
+import PollQRCode from "./PollQRCode";
 
 export default function PollForm() {
   const router = useRouter();
@@ -40,10 +41,10 @@ export default function PollForm() {
       const newId = String(Date.now());
       setSuccessId(newId);
 
-      // brief pause so user sees success state, then navigate to the poll page
+      // longer pause so user can see and use the QR code, then navigate to the poll page
       setTimeout(() => {
         router.push(`/polls/${newId}`);
-      }, 600);
+      }, 5000);
     } catch (err) {
       setError("Failed to create poll. Try again.");
     } finally {
@@ -120,9 +121,20 @@ export default function PollForm() {
       {error && <div className="text-sm text-red-600">{error}</div>}
 
       {successId && (
-        <div className="text-sm text-green-600">
-          Poll created — redirecting...
-        </div>
+        <>
+          <div className="text-sm text-green-600 mb-4">
+            Poll created successfully! Here's your QR code to share:
+          </div>
+          
+          <div className="border-t pt-6">
+            <div className="flex justify-center">
+              <PollQRCode 
+                pollId={successId}
+                pollTitle={title}
+              />
+            </div>
+          </div>
+        </>
       )}
 
       <div className="flex items-center gap-3">

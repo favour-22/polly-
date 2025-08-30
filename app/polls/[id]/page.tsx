@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import PollVote from "@/components/poll/PollVote";
+import PollQRCode from "@/components/poll/PollQRCode";
 
 type Props = { params: { id: string } };
 
@@ -46,10 +47,10 @@ export default async function PollPage({ params }: Props) {
             </div>
           </div>
 
-          <div className="text-sm">
+          <div className="flex items-center gap-3">
             <Link
               href="/polls"
-              className="text-indigo-600 hover:underline"
+              className="text-indigo-600 hover:underline text-sm"
             >
               ← Back to polls
             </Link>
@@ -63,6 +64,17 @@ export default async function PollPage({ params }: Props) {
             options={poll.options}
             totalVotes={poll.totalVotes}
           />
+
+          {/* QR Code Section */}
+          <section className="mt-6 border-t pt-4">
+            <h3 className="text-sm font-medium mb-4">Share this poll</h3>
+            <div className="flex justify-center">
+              <PollQRCode 
+                pollId={poll.id}
+                pollTitle={poll.title}
+              />
+            </div>
+          </section>
 
           {/* Additional sections */}
           <section className="mt-6 border-t pt-4">

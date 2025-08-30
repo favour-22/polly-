@@ -1,0 +1,18 @@
+---
+alwaysApply: true
+---
+## 🧾 Form Handling
+
+- Use `react-hook-form` for form state management
+- Use `shadcn/ui` components for consistent styling and accessibility
+- Validation is handled via `zod` schemas integrated with `react-hook-form` using `zodResolver`
+
+---
+
+## 🔐 Supabase Usage
+
+- Supabase handles both authentication and database operations
+- Auth logic is abstracted in `supabaseClient.ts`
+- Database interactions follow this pattern:
+  ```ts
+  const { data, error } = await supabase.from('polls').insert({...})
