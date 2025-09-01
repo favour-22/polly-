@@ -44,19 +44,24 @@ export default function NavBar() {
               </Link>
             </>
           ) : (
-            <div className="flex items-center gap-3">
-              {/* Avatar (first letter of email or a default icon) */}
-              <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">
-                {user.email?.[0]?.toUpperCase() || "U"}
-              </div>
-              <span className="text-sm font-medium">{user.email}</span>
-              <button
-                onClick={signOut}
-                className="px-3 py-1.5 rounded-md text-sm bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700"
-              >
-                Sign out
-              </button>
-            </div>
+            // Only show avatar, email, and sign out if user is logged in and not on the homepage
+            <>
+              {typeof window !== "undefined" && window.location.pathname !== "/" && (
+                <div className="flex items-center gap-3">
+                  {/* Avatar (first letter of email or a default icon) */}
+                  <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">
+                    {user.email?.[0]?.toUpperCase() || "U"}
+                  </div>
+                  <span className="text-sm font-medium">{user.email}</span>
+                  <button
+                    onClick={signOut}
+                    className="px-3 py-1.5 rounded-md text-sm bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
