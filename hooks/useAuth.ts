@@ -1,9 +1,5 @@
 "use client";
 
-// The following context/provider code should NOT be in this file.
-// It is commented out to prevent build errors.
-// Move this to context/AuthContext.tsx if you need a provider
-/*
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
@@ -56,21 +52,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-*/
-
-// Mock auth hook for now - replace with real Supabase auth later
-export default function useAuth() {
-  // Return a mock user for development
-  return {
-    user: {
-      id: '00000000-0000-0000-0000-000000000001',
-      email: 'demo@example.com',
-      full_name: 'Demo User'
-    },
-    loading: false,
-    signOut: async () => {
-      console.log('Sign out called');
-    }
-  };
 }
