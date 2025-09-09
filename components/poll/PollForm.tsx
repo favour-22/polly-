@@ -37,6 +37,7 @@ export default function PollForm() {
     }
 
     if (!validForm()) {
+
       setError("Please provide a title and at least two non-empty options.");
       return;
     }
@@ -49,10 +50,6 @@ export default function PollForm() {
         description: description.trim() || null,
         options: options.filter(Boolean)
       };
-
-      console.log('PollForm: User object:', user);
-      console.log('PollForm: User ID:', user?.id);
-      console.log('PollForm: Poll data to send:', pollData);
 
       const newPollId = await createPoll(pollData, user.id);
 

@@ -13,17 +13,14 @@ export default function NavBar() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-4 text-sm">
-          <Link href="/polls" className="hover:underline">
-            Polls
-          </Link>
+          <Link href="/about" className="text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400">
+              About
+            </Link>
+            <Link href="/polls" className="text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400">
+              Polls
+            </Link>
           <Link href="/create-poll" className="hover:underline">
             Create
-          </Link>
-          <Link
-            href="/about"
-            className="text-slate-500 dark:text-slate-400"
-          >
-            About
           </Link>
         </nav>
 
