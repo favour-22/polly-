@@ -42,6 +42,25 @@ export async function updateProfile(userId: string, updates: Partial<Profile>): 
   return data;
 }
 
+export async function createProfile(userId: string, email: string, fullName?: string): Promise<Profile | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .insert({
+      id: userId,
+      email,
+      full_name: fullName
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating profile:', error);
+    return null;
+  }
+
+  return data;
+}
+
 // Poll functions
 export async function getPolls(): Promise<(Poll & { total_votes: number; options_count: number })[]> {
   const { data, error } = await supabase
@@ -133,15 +152,20 @@ export async function getPoll(pollId: string): Promise<PollWithOptions | null> {
 }
 
 export async function createPoll(pollData: CreatePollData, creatorId: string): Promise<string | null> {
-  console.log('Creating poll with data:', pollData);
-  console.log('Creator ID:', creatorId);
+  // Check if user has a profile, if not create one
+  const existingProfile = await getProfile(creatorId);
+  if (!existingProfile) {
+    // We need the user's email from the auth context
+    // For now, let's try to get it from Supabase auth
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return null;
+    }
 
-  // Test Supabase connection
-  try {
-    const { data: testData, error: testError } = await supabase.from('polls').select('count', { count: 'exact', head: true });
-    console.log('Supabase connection test - data:', testData, 'error:', testError);
-  } catch (testErr) {
-    console.error('Supabase connection test failed:', testErr);
+    const newProfile = await createProfile(creatorId, user.email!, user.user_metadata?.full_name);
+    if (!newProfile) {
+      return null;
+    }
   }
 
   // Start a transaction
@@ -161,20 +185,8 @@ export async function createPoll(pollData: CreatePollData, creatorId: string): P
 
   if (pollError) {
     console.error('Error creating poll:', pollError);
-    console.error('Poll error details:', JSON.stringify(pollError, null, 2));
-    console.error('Poll data that failed:', {
-      title: pollData.title,
-      description: pollData.description,
-      creator_id: creatorId,
-      visibility: pollData.visibility || 'public',
-      allow_multiple_votes: pollData.allow_multiple_votes || false,
-      allow_anonymous_votes: pollData.allow_anonymous_votes || false,
-      expires_at: pollData.expires_at
-    });
     return null;
   }
-
-  console.log('Poll created successfully:', poll);
 
   // Insert poll options
   const optionsToInsert = pollData.options.map((label, index) => ({
@@ -183,20 +195,16 @@ export async function createPoll(pollData: CreatePollData, creatorId: string): P
     order_index: index
   }));
 
-  console.log('Inserting options:', optionsToInsert);
-
   const { error: optionsError } = await supabase
     .from('poll_options')
     .insert(optionsToInsert);
 
   if (optionsError) {
-    console.error('Error creating poll options:', optionsError);
     // Clean up the poll if options creation fails
     await supabase.from('polls').delete().eq('id', poll.id);
     return null;
   }
 
-  console.log('Poll options created successfully');
   return poll.id;
 }
 
