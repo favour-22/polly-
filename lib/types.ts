@@ -69,7 +69,7 @@ export interface PollResult {
 
 export interface CreatePollData {
   title: string;
-  description?: string;
+  description?: string | null;
   visibility?: PollVisibility;
   allow_multiple_votes?: boolean;
   allow_anonymous_votes?: boolean;

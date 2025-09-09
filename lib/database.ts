@@ -133,6 +133,17 @@ export async function getPoll(pollId: string): Promise<PollWithOptions | null> {
 }
 
 export async function createPoll(pollData: CreatePollData, creatorId: string): Promise<string | null> {
+  console.log('Creating poll with data:', pollData);
+  console.log('Creator ID:', creatorId);
+
+  // Test Supabase connection
+  try {
+    const { data: testData, error: testError } = await supabase.from('polls').select('count', { count: 'exact', head: true });
+    console.log('Supabase connection test - data:', testData, 'error:', testError);
+  } catch (testErr) {
+    console.error('Supabase connection test failed:', testErr);
+  }
+
   // Start a transaction
   const { data: poll, error: pollError } = await supabase
     .from('polls')
@@ -150,8 +161,20 @@ export async function createPoll(pollData: CreatePollData, creatorId: string): P
 
   if (pollError) {
     console.error('Error creating poll:', pollError);
+    console.error('Poll error details:', JSON.stringify(pollError, null, 2));
+    console.error('Poll data that failed:', {
+      title: pollData.title,
+      description: pollData.description,
+      creator_id: creatorId,
+      visibility: pollData.visibility || 'public',
+      allow_multiple_votes: pollData.allow_multiple_votes || false,
+      allow_anonymous_votes: pollData.allow_anonymous_votes || false,
+      expires_at: pollData.expires_at
+    });
     return null;
   }
+
+  console.log('Poll created successfully:', poll);
 
   // Insert poll options
   const optionsToInsert = pollData.options.map((label, index) => ({
@@ -159,6 +182,8 @@ export async function createPoll(pollData: CreatePollData, creatorId: string): P
     label,
     order_index: index
   }));
+
+  console.log('Inserting options:', optionsToInsert);
 
   const { error: optionsError } = await supabase
     .from('poll_options')
@@ -171,6 +196,7 @@ export async function createPoll(pollData: CreatePollData, creatorId: string): P
     return null;
   }
 
+  console.log('Poll options created successfully');
   return poll.id;
 }
 

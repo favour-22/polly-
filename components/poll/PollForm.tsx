@@ -46,9 +46,13 @@ export default function PollForm() {
     try {
       const pollData = {
         title: title.trim(),
-        description: description.trim() || undefined,
+        description: description.trim() || null,
         options: options.filter(Boolean)
       };
+
+      console.log('PollForm: User object:', user);
+      console.log('PollForm: User ID:', user?.id);
+      console.log('PollForm: Poll data to send:', pollData);
 
       const newPollId = await createPoll(pollData, user.id);
 

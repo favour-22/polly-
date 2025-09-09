@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { ReactNode } from "react";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "@/hooks/useAuth";
 
 export const metadata = {
   title: "Polly",
