@@ -33,7 +33,7 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
           setError("Passwords do not match.");
           return;
         }
-        await signUp(email, password, isAdmin);
+        await signUp(email, password);
       } else {
         await signIn(email, password);
       }

@@ -9,8 +9,8 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
-  signIn: (email, password) => Promise<void>;
-  signUp: (email, password, isAdmin) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const signIn = async (email, password) => {
+  const signIn = async (email: string, password: string) => {
     setError(null);
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email, password, isAdmin) => {
+  const signUp = async (email: string, password: string) => {
     setError(null);
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -92,9 +92,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) {
       setError(error.message);
     } else if (data.user) {
+      // The role will now be handled by database defaults or a server-side trigger
       const { error: insertError } = await supabase.from('users').insert({
         id: data.user.id,
-        role: isAdmin ? 'admin' : 'user',
+        role: 'user', // Always default to 'user' on the client-side
       });
 
       if (insertError) {
