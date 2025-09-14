@@ -7,7 +7,15 @@ import Button from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import useAuth from "@/hooks/useAuth";
 
-export default function AuthForm({ mode = "login" }: { mode?: "login" | "register" }) {
+export default function AuthForm({
+  mode = "login",
+  isAdminLogin = false,
+  adminRegistration = false,
+}: {
+  mode?: "login" | "register";
+  isAdminLogin?: boolean;
+  adminRegistration?: boolean;
+}) {
   const router = useRouter();
   const { signIn, signUp, error: authError } = useAuth();
   const searchParams = useSearchParams();
@@ -17,6 +25,7 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminSecret, setAdminSecret] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,9 +42,9 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
           setError("Passwords do not match.");
           return;
         }
-        await signUp(email, password, isAdmin);
+        await signUp(email, password, isAdmin, adminRegistration ? adminSecret : undefined);
       } else {
-        await signIn(email, password);
+        await signIn(email, password, isAdminLogin);
       }
     } catch (err: any) {
       setError(err.message);
@@ -82,16 +91,30 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
               <label className="block text-sm mb-1">Confirm password</label>
               <Input value={confirm} onChange={(e) => setConfirm(e.target.value)} type="password" placeholder="Repeat password" />
             </div>
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="isAdmin"
-                checked={isAdmin}
-                onChange={(e) => setIsAdmin(e.target.checked)}
-                className="mr-2"
-              />
-              <label htmlFor="isAdmin">Register as Admin</label>
-            </div>
+            {mode === 'register' && !adminRegistration && (
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="isAdmin"
+                  checked={isAdmin}
+                  onChange={(e) => setIsAdmin(e.target.checked)}
+                  className="mr-2"
+                />
+                <label htmlFor="isAdmin">Register as Admin</label>
+              </div>
+            )}
+
+            {adminRegistration && (
+              <div>
+                <label className="block text-sm mb-1">Admin Secret</label>
+                <Input
+                  value={adminSecret}
+                  onChange={(e) => setAdminSecret(e.target.value)}
+                  type="password"
+                  placeholder="Enter admin secret"
+                />
+              </div>
+            )}
           </>
         )}
 

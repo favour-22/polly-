@@ -9,8 +9,8 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
-  signIn: (email, password) => Promise<void>;
-  signUp: (email, password, isAdmin) => Promise<void>;
+  signIn: (email, password, isAdminLogin?: boolean) => Promise<void>;
+  signUp: (email, password, isAdmin, adminSecret?: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const signIn = async (email, password) => {
+  const signIn = async (email, password, isAdminLogin = false) => {
     setError(null);
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -74,6 +74,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('id', data.user.id)
         .single();
 
+      if (isAdminLogin && userProfile?.role !== 'admin') {
+        setError('You are not authorized to access this page.');
+        await supabase.auth.signOut();
+        return;
+      }
+
       if (userProfile?.role === 'admin') {
         router.push('/admin');
       } else {
@@ -82,8 +88,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email, password, isAdmin) => {
+  const signUp = async (email, password, isAdmin, adminSecret) => {
     setError(null);
+
+    if (isAdmin && adminSecret !== process.env.NEXT_PUBLIC_ADMIN_REGISTRATION_SECRET) {
+      setError("Invalid admin secret.");
+      return;
+    }
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
