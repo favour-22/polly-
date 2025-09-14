@@ -5,15 +5,18 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Input from "@/components/ui/input";
 import Button from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+import useAuth from "@/hooks/useAuth";
 
 export default function AuthForm({ mode = "login" }: { mode?: "login" | "register" }) {
   const router = useRouter();
+  const { signIn, signUp, error: authError } = useAuth();
   const searchParams = useSearchParams();
   const registered = searchParams?.get("registered") === "1";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,25 +33,9 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
           setError("Passwords do not match.");
           return;
         }
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) {
-          setError(error.message);
-        } else {
-          router.push("/login?registered=1");
-        }
+        await signUp(email, password, isAdmin);
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) {
-          setError(error.message);
-        } else {
-          router.push("/dashboard");
-        }
+        await signIn(email, password);
       }
     } catch (err: any) {
       setError(err.message);
@@ -90,10 +77,22 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
         </div>
 
         {mode === "register" && (
-          <div>
-            <label className="block text-sm mb-1">Confirm password</label>
-            <Input value={confirm} onChange={(e) => setConfirm(e.target.value)} type="password" placeholder="Repeat password" />
-          </div>
+          <>
+            <div>
+              <label className="block text-sm mb-1">Confirm password</label>
+              <Input value={confirm} onChange={(e) => setConfirm(e.target.value)} type="password" placeholder="Repeat password" />
+            </div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="isAdmin"
+                checked={isAdmin}
+                onChange={(e) => setIsAdmin(e.target.checked)}
+                className="mr-2"
+              />
+              <label htmlFor="isAdmin">Register as Admin</label>
+            </div>
+          </>
         )}
 
         <div className="flex items-center justify-between mt-2">

@@ -1,24 +1,45 @@
--- Create a custom type for user roles to ensure data consistency
-CREATE TYPE public.user_role AS ENUM ('admin', 'user');
+-- Create a table for public profiles
+create table users (
+  id uuid references auth.users on delete cascade not null primary key,
+  updated_at timestamp with time zone,
+  username text unique,
+  full_name text,
+  avatar_url text,
+  website text,
+  role text default 'user',
 
--- Add the new 'role' column to the 'profiles' table
--- Default to 'user' for all new and existing profiles
-ALTER TABLE public.profiles
-ADD COLUMN role public.user_role DEFAULT 'user' NOT NULL;
+  constraint username_length check (char_length(username) >= 3)
+);
 
--- Add an index on the 'role' column for faster queries
-CREATE INDEX idx_profiles_role ON public.profiles(role);
+alter table users enable row level security;
 
--- Note: You will need to update your Row Level Security (RLS) policies
--- to grant admin-level permissions. For example, admins might have
--- permissions to view or modify all polls, while users can only manage their own.
+create policy "Public profiles are viewable by everyone."
+  on users for select
+  using ( true );
 
-/*
--- Example of how to manually assign the 'admin' role to a user:
--- 1. Get the user's ID from the 'auth.users' table after they have signed up.
--- 2. Run the following SQL command, replacing the user ID with the actual ID.
+create policy "Users can insert their own profile."
+  on users for insert
+  with check ( auth.uid() = id );
 
-UPDATE public.profiles
-SET role = 'admin'
-WHERE id = 'paste_user_id_here';
-*/
+create policy "Users can update own profile."
+  on users for update
+  using ( auth.uid() = id );
+
+-- Set up Realtime!
+begin;
+  drop publication if exists supabase_realtime;
+  create publication supabase_realtime;
+commit;
+alter publication supabase_realtime add table users;
+
+-- Set up Storage!
+insert into storage.buckets (id, name)
+  values ('avatars', 'avatars');
+
+create policy "Avatar images are publicly accessible."
+  on storage.objects for select
+  using ( bucket_id = 'avatars' );
+
+create policy "Anyone can upload an avatar."
+  on storage.objects for insert
+  with check ( bucket_id = 'avatars' );
