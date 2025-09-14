@@ -7,6 +7,23 @@ import Button from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import useAuth from "@/hooks/useAuth";
 
+/**
+ * Render a login or registration form and handle its client-side interactions.
+ *
+ * The component supports two modes: "login" (default) and "register". It collects
+ * email and password fields in both modes, and additionally a password confirmation
+ * and an "Register as Admin" checkbox in register mode. On submit it performs
+ * client-side validation (passwords must match for registration) and invokes
+ * authentication handlers from the `useAuth` hook (`signIn` for login, `signUp`
+ * for registration). Submission state and any authentication error messages are
+ * surfaced in the UI.
+ *
+ * Note: the `isAdmin` checkbox is rendered in register mode but is not passed to
+ * `signUp` (registration currently only sends email and password).
+ *
+ * @param mode - Either `"login"` or `"register"`. Controls which fields and copy are shown.
+ * @returns A React element containing the authentication form.
+ */
 export default function AuthForm({ mode = "login" }: { mode?: "login" | "register" }) {
   const router = useRouter();
   const { signIn, signUp, error: authError } = useAuth();
