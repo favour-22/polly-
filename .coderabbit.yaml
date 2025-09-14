@@ -14,14 +14,16 @@ reviews:
     drafts: false
 
   # Security scanning configuration
-  security_scanning:
-    enabled: true
-    scan_dependencies: true
-    scan_secrets: true
-    vulnerability_alerts: true
-    sast_enabled: true  # Static Application Security Testing
-
-  # AI-powered suggestions
+  # Security scanning via tools (schema-compliant)
+  tools:
+    gitleaks:
+      enabled: true       # secrets scanning
+    osvScanner:
+      enabled: true       # dependency vulns
+    semgrep:
+      enabled: true       # SAST
+    checkov:
+      enabled: true       # IaC scanning  # AI-powered suggestions
   ai_suggestions:
     enabled: true
     features:

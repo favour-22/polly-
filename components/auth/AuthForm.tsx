@@ -42,7 +42,11 @@ export default function AuthForm({
           setError("Passwords do not match.");
           return;
         }
+<<<<<<< HEAD
         await signUp(email, password, isAdmin, adminRegistration ? adminSecret : undefined);
+=======
+        await signUp(email, password);
+>>>>>>> 7f193740d91ef55c668cde61718f0a899a0ca0e2
       } else {
         await signIn(email, password, isAdminLogin);
       }

@@ -9,8 +9,13 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
+<<<<<<< HEAD
   signIn: (email, password, isAdminLogin?: boolean) => Promise<void>;
   signUp: (email, password, isAdmin, adminSecret?: string) => Promise<void>;
+=======
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
+>>>>>>> 7f193740d91ef55c668cde61718f0a899a0ca0e2
   signOut: () => Promise<void>;
 }
 
@@ -58,7 +63,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+<<<<<<< HEAD
   const signIn = async (email, password, isAdminLogin = false) => {
+=======
+  const signIn = async (email: string, password: string) => {
+>>>>>>> 7f193740d91ef55c668cde61718f0a899a0ca0e2
     setError(null);
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -88,7 +97,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+<<<<<<< HEAD
   const signUp = async (email, password, isAdmin, adminSecret) => {
+=======
+  const signUp = async (email: string, password: string) => {
+>>>>>>> 7f193740d91ef55c668cde61718f0a899a0ca0e2
     setError(null);
 
     if (isAdmin && adminSecret !== process.env.NEXT_PUBLIC_ADMIN_REGISTRATION_SECRET) {
@@ -103,9 +116,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) {
       setError(error.message);
     } else if (data.user) {
+      // The role will now be handled by database defaults or a server-side trigger
       const { error: insertError } = await supabase.from('users').insert({
         id: data.user.id,
-        role: isAdmin ? 'admin' : 'user',
+        role: 'user', // Always default to 'user' on the client-side
       });
 
       if (insertError) {
