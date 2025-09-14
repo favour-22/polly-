@@ -16,6 +16,24 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Provides authentication state and actions to descendants via AuthContext.
+ *
+ * Wraps children with an AuthContext.Provider exposing { user, loading, error, signIn, signUp, signOut }.
+ * On mount it:
+ * - subscribes to Supabase auth state changes and updates `user` (augmenting the user with a `role`
+ *   loaded from the `users` table, defaulting to `"user"` when missing),
+ * - performs an initial session check,
+ * - cleans up the auth subscription on unmount.
+ *
+ * Actions:
+ * - signIn(email, password): signs in with Supabase, loads the user's role from `users`, and navigates
+ *   to `/admin` for role === "admin" or `/dashboard` otherwise. Sets `error` on authentication failure.
+ * - signUp(email, password): registers with Supabase, inserts a `users` row defaulting `role` to `"user"`
+ *   (role management is expected to be enforced server-side/database-side), and redirects to
+ *   `/login?registered=1` on success. Sets `error` on failure.
+ * - signOut(): signs out from Supabase, clears `user`, and redirects to `/login`.
+ */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
